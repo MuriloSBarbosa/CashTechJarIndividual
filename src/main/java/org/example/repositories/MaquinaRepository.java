@@ -117,24 +117,24 @@ public class MaquinaRepository {
         StringBuilder valuesDocker = new StringBuilder();
 
         for (int i = 0; i < volumes.size(); i++) {
-            values.append(String.format("('%s','%s',%d,%d,'%s','%s',%s)",
+            values.append(String.format("('%s','%s',%d,%d,'%s','%s',%s",
                     "disco", // tipo
                     volumes.get(i).getNome(), //nome
                     volumes.get(i).getTotal(),//qtd_maxima
                     volumes.get(i).getDisponivel(),// qtd_disponivel
                     volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
                     volumes.get(i).getTipo(),// sistema_arquivos;
-                    i == volumes.size() - 1 ? scriptSelect : scriptSelect + ", " // caixa_eletronico_id
+                    i == volumes.size() - 1 ? scriptSelect + ")" : scriptSelect + "), " // caixa_eletronico_id
             ));
 
-            valuesDocker.append(String.format("('%s','%s',%d,%d,'%s','%s',%s)",
+            valuesDocker.append(String.format("('%s','%s',%d,%d,'%s','%s',%s",
                     "disco", // tipo
                     volumes.get(i).getNome(), //nome
                     volumes.get(i).getTotal(),//qtd_maxima
                     volumes.get(i).getDisponivel(),// qtd_disponivel
                     volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
                     volumes.get(i).getTipo(),// sistema_arquivos;
-                    i == volumes.size() - 1 ? scriptSelectDocker : scriptSelectDocker + ", " // caixa_eletronico_id
+                    i == volumes.size() - 1 ? scriptSelectDocker + ")" : scriptSelectDocker + "), " // caixa_eletronico_id
             ));
         }
 
