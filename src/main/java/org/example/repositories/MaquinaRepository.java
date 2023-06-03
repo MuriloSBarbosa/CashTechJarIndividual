@@ -117,7 +117,7 @@ public class MaquinaRepository {
         StringBuilder valuesDocker = new StringBuilder();
 
         for (int i = 0; i < volumes.size(); i++) {
-            values.append(String.format("('%s','%s',%d,%d,'%s','%s',%s",
+            values.append(String.format("('%s','%s',%d,%d,'%s','%s',%s)",
                     "disco", // tipo
                     volumes.get(i).getNome(), //nome
                     volumes.get(i).getTotal(),//qtd_maxima
@@ -127,7 +127,7 @@ public class MaquinaRepository {
                     i == volumes.size() - 1 ? scriptSelect : scriptSelect + ", " // caixa_eletronico_id
             ));
 
-            valuesDocker.append(String.format("('%s','%s',%d,%d,'%s','%s',%s",
+            valuesDocker.append(String.format("('%s','%s',%d,%d,'%s','%s',%s)",
                     "disco", // tipo
                     volumes.get(i).getNome(), //nome
                     volumes.get(i).getTotal(),//qtd_maxima
@@ -142,8 +142,8 @@ public class MaquinaRepository {
                 + " (tipo,nome,qtd_maxima, qtd_disponivel, ponto_montagem,sistema_arquivos,caixa_eletronico_id)"
                 + " VALUES ";
 
-        con.update(scriptDisco + values + ")");
-        conDock.update(scriptDisco + valuesDocker + ")");
+        con.update(scriptDisco + values);
+        conDock.update(scriptDisco + valuesDocker);
     }
 
     public List<String> buscarIdentificador(Integer idAtm) {
