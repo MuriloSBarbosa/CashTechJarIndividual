@@ -1,0 +1,21 @@
+2023-06-02 19:16:05 - Login realizado com sucesso do usuário: pedro
+2023-06-02 19:17:06 - Erro ao realizar login do usuário : ps
+2023-06-02 19:17:08 - Erro ao realizar login do usuário : ps
+2023-06-02 19:17:10 - Erro ao realizar login do usuário : al
+2023-06-02 19:17:13 - Erro ao realizar login do usuário : mdas
+2023-06-02 19:17:16 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:03:51 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:08:15 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:10:10 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:11:47 - Erro ao realizar login do usuário : pedro
+2023-06-02 20:12:45 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:15:54 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:16:24 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:18:53 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:23:37 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:24:34 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:25:05 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:26:59 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:28:14 - Login realizado com sucesso do usuário: pedro
+2023-06-02 20:43:16 - Login realizado com sucesso do usuário: pedro
+2023-06-02 21:28:29 - Login realizado com sucesso do usuário: pedro

@@ -24,24 +24,17 @@ import java.util.List;
 public class MaquinaRepository {
 
     DataBase conexao = new DataBase();
-    RedeParametros redeParametros;
-
     DataBaseDocker conexaoDocker = new DataBaseDocker();
-
     public JdbcTemplate conDock = conexaoDocker.getConnection();
 
     public JdbcTemplate con = conexao.getConnection();
 
     public void cadastrarSistema(Sistema sistema) {
-        String script;
-            // Query do SQL
-            script = "INSERT INTO Sistema (nome,fabricante,arquitetura) VALUES"
-                    + "(?,?,?)";
+        String script = String.format("INSERT INTO Sistema (nome,fabricante,arquitetura) VALUES "
+                + "('%s','%s','%d')", sistema.getSistemaOperacional(), sistema.getFabricante(), sistema.getArquitetura());
 
-        conDock.update(script, sistema.getSistemaOperacional(), sistema.getFabricante(), sistema.getArquitetura());
-
-        con.update(script,
-                sistema.getSistemaOperacional(), sistema.getFabricante(), sistema.getArquitetura());
+        conDock.update(script);
+        con.update(script);
     }
 
     public void cadastrarEndereco() {
@@ -51,26 +44,16 @@ public class MaquinaRepository {
     }
 
     public void cadastrarInterfaceRede(RedeInterface redeDado) {
-        String script = "INSERT INTO NetworkInterface (nome,nome_exibicao,ipv4,ipv6,mac,caixa_eletronico_id) " +
-                "VALUES (?,?,?,?,?,(SELECT TOP 1 id FROM CaixaEletronico ORDER BY id DESC))";
-        con.update(
-                script,
-                redeDado.getNome(),
-                redeDado.getNomeExibicao(),
-                redeDado.getEnderecoIpv4().get(0),
-                redeDado.getEnderecoIpv6().get(0),
-                redeDado.getEnderecoMac()
-        );
-
-        String scriptDocker = "INSERT INTO NetworkInterface (nome,nome_exibicao,ipv4,ipv6,mac,caixa_eletronico_id)" +
-                " VALUES (?,?,?,?,?,(SELECT id FROM CaixaEletronico ORDER BY id DESC LIMIT 1))";
-
-        conDock.update(scriptDocker,
+        String script = String.format("INSERT INTO NetworkInterface (nome,nome_exibicao,ipv4,ipv6,mac,caixa_eletronico_id) " +
+                        "VALUES ('%s','%s','%s','%s','%s',",
                 redeDado.getNome(),
                 redeDado.getNomeExibicao(),
                 redeDado.getEnderecoIpv4().get(0),
                 redeDado.getEnderecoIpv6().get(0),
                 redeDado.getEnderecoMac());
+
+        con.update(script + "(SELECT TOP 1 id FROM CaixaEletronico ORDER BY id DESC))");
+        conDock.update(script + "(SELECT id FROM CaixaEletronico ORDER BY id DESC LIMIT 1))");
     }
 
     public void cadastrarMaquina(RedeParametros parametros, Integer empresa_id) {
@@ -97,175 +80,73 @@ public class MaquinaRepository {
                 new SingleColumnRowMapper(Integer.class), nomeMaquina);
     }
 
-    public void cadastrarComponente(Processador processador, Memoria memoria, DiscoGrupo discoGrupo, String tipo) {
-
-        String scriptSelect = "(SELECT TOP 1 id FROM CaixaEletronico ORDER BY id DESC)";
-        String script = "INSERT INTO Componente"
-                + "(tipo,nome,modelo,serie,frequencia,qtd_cpu_logica,"
-                + "qtd_cpu_fisica,qtd_maxima,qtd_disponivel,ponto_montagem,sistema_arquivos,caixa_eletronico_id)"
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,(SELECT TOP 1 id FROM CaixaEletronico ORDER BY id DESC))";
-
-
-        String scriptSelectDocker = "(SELECT id FROM CaixaEletronico ORDER BY id DESC LIMIT 1)";
-        String scriptDocker = "INSERT INTO Componente"
-                + "(tipo,nome,modelo,serie,frequencia,qtd_cpu_logica,"
-                + "qtd_cpu_fisica,qtd_maxima,qtd_disponivel,ponto_montagem,sistema_arquivos,caixa_eletronico_id)"
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,(SELECT id FROM CaixaEletronico ORDER BY id DESC LIMIT 1))";
-
-        switch (tipo) {
-
-            case "processador":
-                con.update(script,
-                        tipo,// tipo
-                        processador.getNome(), //nome
-                        null,// modelo
-                        processador.getId(),//serie
-                        processador.getFrequencia(),//frequencia
-                        processador.getNumeroCpusLogicas(),// qtd_cpu_logica
-                        processador.getNumeroCpusFisicas(),// qtd_cpu_fisica
-                        null,// qtd_maxima
-                        null,//qtd_disponivel
-                        null,//ponto_montagem
-                        null);// sistemas_arquivos;
-
-                conDock.update(scriptDocker,
-                        tipo,// tipo
-                        processador.getNome(), //nome
-                        null,// modelo
-                        processador.getId(),//serie
-                        processador.getFrequencia(),//frequencia
-                        processador.getNumeroCpusLogicas(),// qtd_cpu_logica
-                        processador.getNumeroCpusFisicas(),// qtd_cpu_fisica
-                        null,// qtd_maxima
-                        null,//qtd_disponivel
-                        null,//ponto_montagem
-                        null);// sistemas_arquivos;
-                break;
-
-            case "memoria":
-                con.update(script,
-                        tipo,// tipo
-                        null,// nome
-                        null,// modelo
-                        null,// serie
-                        null,// frequencia
-                        null,// q
-                        null,
-                        memoria.getTotal(),
-                        null,
-                        null,
-                        null
-                );
-                conDock.update(scriptDocker,
-                        tipo,// tipo
-                        null,// nome
-                        null,// modelo
-                        null,// serie
-                        null,// frequencia
-                        null,// q
-                        null,
-                        memoria.getTotal(),
-                        null,
-                        null,
-                        null
-                );
-                break;
-
-            case "disco":
-                String values = "";
-                String valuesDocker = "";
-
-                List<Volume> volumes = discoGrupo.getVolumes();
-                for (int i = 0; i < volumes.size(); i++) {
-                    if (i == volumes.size() - 1) {
-                        values += String.format("('%s','%s',null,null,null,null,null,%d,%d,'%s','%s',%s)",
-                                tipo, // tipo   
-                                volumes.get(i).getNome(), //nome
-                                // modelo
-                                // serie
-                                // frequencia
-                                // qtd_cpu_logica
-                                // qtd_cpu_fisica
-                                volumes.get(i).getTotal(),//qtd_maxima
-                                volumes.get(i).getDisponivel(),// qtd_disponivel
-                                volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
-                                volumes.get(i).getTipo(),
-                                scriptSelect); // sistema_arquivos;
-
-                    } else {
-                        values += String.format("('%s','%s',null,null,null,null,null,%d,%d,'%s','%s',%s), ",
-                                tipo, // tipo
-                                volumes.get(i).getNome(), //nome
-                                // modelo
-                                // serie
-                                // frequencia
-                                // qtd_cpu_logica
-                                // qtd_cpu_fisica
-                                volumes.get(i).getTotal(),//qtd_maxima
-                                volumes.get(i).getDisponivel(),// qtd_disponivel
-                                volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
-                                volumes.get(i).getTipo(),
-                                scriptSelect);
-                    }
-                }
-
-                for (int i = 0; i < volumes.size(); i++) {
-                    if (i == volumes.size() - 1) {
-                        valuesDocker += String.format("('%s','%s',null,null,null,null,null,%d,%d,'%s','%s',%s)",
-                                tipo, // tipo
-                                volumes.get(i).getNome(), //nome
-                                // modelo
-                                // serie
-                                // frequencia
-                                // qtd_cpu_logica
-                                // qtd_cpu_fisica
-                                volumes.get(i).getTotal(),//qtd_maxima
-                                volumes.get(i).getDisponivel(),// qtd_disponivel
-                                volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
-                                volumes.get(i).getTipo(),
-                                scriptSelectDocker); // sistema_arquivos;
-
-                    } else {
-                        valuesDocker += String.format("('%s','%s',null,null,null,null,null,%d,%d,'%s','%s',%s), ",
-                                tipo, // tipo
-                                volumes.get(i).getNome(), //nome
-                                // modelo
-                                // serie
-                                // frequencia
-                                // qtd_cpu_logica
-                                // qtd_cpu_fisica
-                                volumes.get(i).getTotal(),//qtd_maxima
-                                volumes.get(i).getDisponivel(),// qtd_disponivel
-                                volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
-                                volumes.get(i).getTipo(),
-                                scriptSelectDocker);
-                    }
-                }
-
-                String scriptDisco = String.format("INSERT INTO Componente"
-                        + " (tipo,nome,modelo,serie,frequencia,qtd_cpu_logica,"
-                        + " qtd_cpu_fisica,qtd_maxima,qtd_disponivel,ponto_montagem,sistema_arquivos,caixa_eletronico_id)"
-                        + " VALUES %s;", values);
-
-                String scriptDiscoDocker = String.format("INSERT INTO Componente"
-                        + " (tipo,nome,modelo,serie,frequencia,qtd_cpu_logica,"
-                        + " qtd_cpu_fisica,qtd_maxima,qtd_disponivel,ponto_montagem,sistema_arquivos,caixa_eletronico_id)"
-                        + " VALUES %s;", valuesDocker);
-
-
-                conDock.update(scriptDiscoDocker);
-                con.update(scriptDisco);
-
-                break;
-
-            default:
-                System.out.println("Componente Inválido");
-                System.out.println(tipo);
-                break;
+    public String scriptSelectCaixaEletronico(String type) {
+        if (type.equals("docker")) {
+            return "(SELECT id FROM CaixaEletronico ORDER BY id DESC LIMIT 1)";
+        } else {
+            return "(SELECT TOP 1 id FROM CaixaEletronico ORDER BY id DESC)";
         }
     }
+
+    public void cadastrarProcessador(String nome, String id, Long frequencia, Integer qtdCpuLogica, Integer qtdCpuFisica) {
+        String script = String.format(
+                "INSERT INTO Componente (tipo,nome,serie,frequencia,qtd_cpu_logica,qtd_cpu_fisica,caixa_eletronico_id) " +
+                        "VALUES ('processador','%s','%s',%d,%d,%d,",
+                nome, id, frequencia, qtdCpuLogica, qtdCpuFisica);
+
+        con.update(script + scriptSelectCaixaEletronico("") + ")");
+        conDock.update(script + scriptSelectCaixaEletronico("docker") + ")");
+    }
+
+    public void cadastrarMemoria(Long qtdMaxima) {
+
+        String script = String.format(
+                "INSERT INTO Componente (tipo,qtd_maxima,caixa_eletronico_id) " +
+                        "VALUES ('memoria',%d,", qtdMaxima);
+
+        con.update(script + scriptSelectCaixaEletronico("") + ")");
+        conDock.update(script + scriptSelectCaixaEletronico("docker") + ")");
+    }
+
+    public void cadastrarDisco(List<Volume> volumes) {
+
+        String scriptSelect = scriptSelectCaixaEletronico("");
+        String scriptSelectDocker = scriptSelectCaixaEletronico("docker");
+
+        StringBuilder values = new StringBuilder();
+        StringBuilder valuesDocker = new StringBuilder();
+
+        for (int i = 0; i < volumes.size(); i++) {
+            values.append(String.format("('%s','%s',%d,%d,'%s','%s',%s",
+                    "disco", // tipo
+                    volumes.get(i).getNome(), //nome
+                    volumes.get(i).getTotal(),//qtd_maxima
+                    volumes.get(i).getDisponivel(),// qtd_disponivel
+                    volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
+                    volumes.get(i).getTipo(),// sistema_arquivos;
+                    i == volumes.size() - 1 ? scriptSelect : scriptSelect + ", " // caixa_eletronico_id
+            ));
+
+            valuesDocker.append(String.format("('%s','%s',%d,%d,'%s','%s',%s",
+                    "disco", // tipo
+                    volumes.get(i).getNome(), //nome
+                    volumes.get(i).getTotal(),//qtd_maxima
+                    volumes.get(i).getDisponivel(),// qtd_disponivel
+                    volumes.get(i).getPontoDeMontagem().endsWith("\\") ? volumes.get(i).getPontoDeMontagem() + "\\" : volumes.get(i).getPontoDeMontagem(), // ponto_montagem
+                    volumes.get(i).getTipo(),// sistema_arquivos;
+                    i == volumes.size() - 1 ? scriptSelectDocker : scriptSelectDocker + ", " // caixa_eletronico_id
+            ));
+        }
+
+        String scriptDisco = "INSERT INTO Componente"
+                + " (tipo,nome,qtd_maxima, qtd_disponivel, ponto_montagem,sistema_arquivos,caixa_eletronico_id)"
+                + " VALUES ";
+
+        con.update(scriptDisco + values + ")");
+        conDock.update(scriptDisco + valuesDocker + ")");
+    }
+
     public List<String> buscarIdentificador(Integer idAtm) {
         return con.query("SELECT identificador FROM CaixaEletronico WHERE id = " + idAtm, new SingleColumnRowMapper<>(String.class));
     }
-
 }

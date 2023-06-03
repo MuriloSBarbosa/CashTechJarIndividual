@@ -30,7 +30,7 @@ public class GerarLog {
 
     public void login(String usuario, Boolean isErro) {
 
-        File login = new File("log.txt");
+        File login = new File("log-login.txt");
 
         //throws IOException e try e catch 
         if (!login.exists()) {
@@ -41,27 +41,21 @@ public class GerarLog {
             }
         }
 
-        String frase = "O usuário --" + usuario + "-- fez login";
+        String frase = "Login realizado com sucesso do usuário: " + usuario;
 
         if (isErro) {
-            frase = "Tentativa de login do usuário --" + usuario + "-- ";
+            frase = "Erro ao realizar login do usuário : "+ usuario;
         }
 
         ZonedDateTime horarioBrasilia = ZonedDateTime.now(ZoneId.of("America/Sao_Paulo"));
         LocalDateTime dtMetrica = horarioBrasilia.toLocalDateTime();
 
-        //Criar uma arraylist que vai armazenar o registro em si dos logins
-        List<String> lista = new ArrayList<>();
-        lista.add(
-                dtMetrica.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss ")) + frase);
 
-        //A classe Formatter permite que a saída de dados formatados seja
-        //enviada para qualquer fluxo baseado em texto de uma maneira semelhante ao método System.out.printf.
-        //Classe files é adicionada para manipulação de arquivos e diretórios
-        //StandardOpenOption especifica como o arquivo deve ser aberto, 
-        //no caso do APPEND Os dados são gravados no final do arquivo.       
+        List<String> linhas = new ArrayList();
+        linhas.add(dtMetrica.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " - " + frase);
+
         try {
-            Files.write(Paths.get(login.getPath()), lista, StandardOpenOption.APPEND);
+            Files.write(Paths.get(login.getPath()), linhas, StandardOpenOption.APPEND);
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
