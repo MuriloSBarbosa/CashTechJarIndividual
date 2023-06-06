@@ -28,3 +28,13 @@
 2023-06-03 00:37:53 - Login realizado com sucesso do usuário: pedro
 2023-06-03 00:44:05 - Login realizado com sucesso do usuário: pedro
 2023-06-03 00:44:33 - Login realizado com sucesso do usuário: pedro
+2023-06-05 14:16:17 - Login realizado com sucesso do usuário: pedro
+2023-06-05 14:16:45 - Login realizado com sucesso do usuário: pedro
+2023-06-05 14:17:07 - Login realizado com sucesso do usuário: pedro
+2023-06-05 18:51:18 - Login realizado com sucesso do usuário: pedro
+2023-06-05 19:03:04 - Login realizado com sucesso do usuário: pedro
+2023-06-06 16:23:30 - Login realizado com sucesso do usuário: pedro
+2023-06-06 16:51:57 - Login realizado com sucesso do usuário: pedro
+2023-06-06 16:55:41 - Login realizado com sucesso do usuário: pedro
+2023-06-06 19:52:03 - Login realizado com sucesso do usuário: pedro
+2023-06-06 19:52:55 - Login realizado com sucesso do usuário: pedro
